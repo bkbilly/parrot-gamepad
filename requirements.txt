@@ -1,0 +1,2 @@
+parrot-olympe==7.0.2
+inputs==0.5

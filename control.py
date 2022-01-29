@@ -2,6 +2,9 @@ from inputs import get_gamepad
 import math
 import threading
 import time
+import os
+import cv2
+import numpy as np
 import olympe
 from olympe.messages import gimbal
 from olympe.messages.skyctrl.CoPiloting import setPilotingSource
@@ -234,6 +237,39 @@ class ParrotAnafi():
                 print(e)
 
 
+class Stream():
+    def __init__(self, drone_obj):
+        os.environ['OPENCV_FFMPEG_CAPTURE_OPTIONS'] = 'rtsp_transport;udp'
+        self.rtsp_stream = f"rtsp://{drone_obj.ip}:554/live"
+
+        self._monitor_thread = threading.Thread(target=self.show_stream)
+        self._monitor_thread.daemon = True
+        self._monitor_thread.start()
+
+    def show_stream(self):
+        cam = cv2.VideoCapture(self.rtsp_stream)
+        while True:
+            if drone_obj.connected:
+                try:
+                    success, frame = cam.read()
+                    if success:
+                        cv2.imshow('VIDEO', frame)
+                        cv2.waitKey(1)
+                    else:
+                        cv2.destroyAllWindows()
+                        time.sleep(1)
+                        cam.open(self.rtsp_stream)
+                except:
+                    cv2.destroyAllWindows()
+                    time.sleep(1)
+                    cam.open(self.rtsp_stream)
+            else:
+                cv2.destroyAllWindows()
+                time.sleep(1)
+                cam.release()
+
+
 if __name__ == '__main__':
     drone_obj = DroneConnect('10.202.0.1')
+    Stream(drone_obj)
     ParrotAnafi(drone_obj.drone)

@@ -8,7 +8,7 @@ from olympe.messages.skyctrl.CoPiloting import setPilotingSource
 from olympe.messages.ardrone3.Piloting import TakeOff, Landing
 from olympe.messages.ardrone3.PilotingState import FlyingStateChanged
 from olympe.messages.camera import zoom_info, zoom_level, set_zoom_target
-from flask import Flask
+from flask import Flask, render_template
 
 
 class DroneConnect():
@@ -97,6 +97,11 @@ app = Flask(__name__)
 
 drone_obj = DroneConnect('10.202.0.1')
 Stream(drone_obj)
+
+
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 
 @app.route("/start_piloting")

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <title></title>
+</head>
+<body>
+  <!-- <video src="http://localhost:8080/video.mp4"></video> -->
+  Press button on controller to connect.
+  <div id="axes" style="display: flex; flex-direction: column;"></div>
+  <div id="buttons" style="display: flex; flex-direction: column;"></div>
+
+
+  <script>
+  var deadzone = 10;
+  var RightJoystickX = 0;
+  var RightJoystickY = 0;
+  var LeftJoystickX = 0;
+  var LeftJoystickY = 0;
+  var RightBumper = false
+  var A = false
+  var B = false
+  var Back = false
+  var UpDPad = false
+  var DownDPad = false
+  var LeftDPad = false
+  var RightDPad = false
+  window.addEventListener('gamepadconnected', (event) => {
+    const update = () => {
+      const output = document.getElementById('axes');
+      output.innerHTML = ''; // clear the output
+
+      for (const gamepad of navigator.getGamepads()) {
+        if (!gamepad) continue;
+
+        // Get Stick axes
+        RightJoystickX = Math.round(gamepad.axes[2] * 100);
+        RightJoystickY = -Math.round(gamepad.axes[3] * 100);
+        LeftJoystickX = Math.round(gamepad.axes[0] * 100);
+        LeftJoystickY = -Math.round(gamepad.axes[1] * 100);
+        if (Math.abs(RightJoystickX) <= deadzone)
+          RightJoystickX = 0;
+        if (Math.abs(RightJoystickY) <= deadzone)
+          RightJoystickY = 0;
+        if (Math.abs(LeftJoystickX) <= deadzone)
+          LeftJoystickX = 0;
+        if (Math.abs(LeftJoystickY) <= deadzone)
+          LeftJoystickY = 0;
+
+        // Get Buttons state
+        RightBumper = gamepad.buttons[5].pressed;
+        Back = gamepad.buttons[8].pressed;
+
+        // Visualize Axes and Sticks
+        for (const [index, axis] of gamepad.axes.entries()) {
+          output.insertAdjacentHTML('beforeend',
+            `<label>${gamepad.index}, ${index}
+               <progress value=${axis * 0.5 + 0.5}></progress>
+             </label>`);
+        }
+        for (const [index, button] of gamepad.buttons.entries()) {
+          output.insertAdjacentHTML('beforeend',
+            `<label>${gamepad.index}, ${index}
+               <progress value=${button.value}></progress>
+               ${button.touched ? 'touched' : ''}
+               ${button.pressed ? 'pressed' : ''}
+             </label>`);
+        }
+
+      }
+      requestAnimationFrame(update);
+    };
+    update();
+  });
+
+  window.addEventListener('gamepaddisconnected', (event) => {
+    console.log('connected:', event.gamepad.connected);
+  });
+  function sleep(milliseconds) {
+    const date = Date.now();
+    let currentDate = null;
+    do {
+      currentDate = Date.now();
+    } while (currentDate - date < milliseconds);
+  }
+
+  function sendController() {
+    if (RightBumper === true) {
+      if (Back === true) {
+        $.get( "/flyingstate", function( data ) {
+          console.log(data);
+          if (data === 'landed') {
+            $.get( "/takeoff");
+          } else {
+            $.get( "/land");
+          }
+        });
+        sleep(2000);
+      }
+      if (RightJoystickX + RightJoystickY + LeftJoystickX + LeftJoystickY != 0){
+        console.log(RightJoystickX, RightJoystickY, LeftJoystickX, LeftJoystickY)
+        $.get( "/set_pcmd/" + RightJoystickX + "/" + RightJoystickY + "/" + LeftJoystickX + "/" + LeftJoystickY + "/0.1");
+      }
+    }
+  }
+  setInterval(sendController, 60);
+
+  </script>
+</body>
+</html>

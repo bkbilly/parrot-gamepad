@@ -2,3 +2,4 @@ parrot-olympe==7.0.2
 inputs==0.5
 opencv-python==4.5.4.58
 numpy==1.21.4
+Flask==2.0.1

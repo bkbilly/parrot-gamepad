@@ -140,6 +140,22 @@ def get_gimbal():
     return str(drone_obj.drone.get_state(gimbal.attitude)[0]['pitch_absolute'])
 
 
+@app.route("/set_gimbalup")
+def set_gimbalup():
+    gimbal_pos = drone_obj.drone.get_state(gimbal.attitude)[0]['pitch_absolute']
+    gimbal_pos += 5
+    set_gimbal(gimbal_pos)
+    return 'ok'
+
+
+@app.route("/set_gimbaldown")
+def set_gimbaldown():
+    gimbal_pos = drone_obj.drone.get_state(gimbal.attitude)[0]['pitch_absolute']
+    gimbal_pos -= 5
+    set_gimbal(gimbal_pos)
+    return 'ok'
+
+
 @app.route("/get_zoom")
 def get_zoom():
     return str(drone_obj.drone.get_state(zoom_level)[0]['level'])
@@ -152,6 +168,27 @@ def get_zoominfo():
 
 @app.route("/set_zoom/<zoom_set>")
 def set_zoom(zoom_set):
+    drone_obj.drone(set_zoom_target(0, "level", float(zoom_set))).wait()
+    return 'ok'
+
+
+@app.route("/set_zoomin")
+def set_zoomin():
+    current_zoom = drone_obj.drone.get_state(zoom_level)[0]['level']
+    max_zoom = drone_obj.drone.get_state(zoom_info)[0]['maximum_level']
+    zoom_set = current_zoom + 0.5
+    if zoom_set > max_zoom:
+        zoom_set = max_zoom
+    drone_obj.drone(set_zoom_target(0, "level", float(zoom_set))).wait()
+    return 'ok'
+
+
+@app.route("/set_zoomout")
+def set_zoomout():
+    current_zoom = drone_obj.drone.get_state(zoom_level)[0]['level']
+    zoom_set = current_zoom - 0.5
+    if zoom_set < 1:
+        zoom_set = 1
     drone_obj.drone(set_zoom_target(0, "level", float(zoom_set))).wait()
     return 'ok'
 

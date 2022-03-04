@@ -19,9 +19,10 @@
   var LeftJoystickX = 0;
   var LeftJoystickY = 0;
   var RightBumper = false
-  var A = false
-  var B = false
+  var ButtonA = false
+  var ButtonB = false
   var Back = false
+  var Start = false
   var UpDPad = false
   var DownDPad = false
   var LeftDPad = false
@@ -51,6 +52,13 @@
         // Get Buttons state
         RightBumper = gamepad.buttons[5].pressed;
         Back = gamepad.buttons[8].pressed;
+        Start = gamepad.buttons[9].pressed;
+        UpDPad = gamepad.buttons[12].pressed;
+        DownDPad = gamepad.buttons[13].pressed;
+        LeftDPad = gamepad.buttons[14].pressed;
+        RightDPad = gamepad.buttons[15].pressed;
+        ButtonA = gamepad.buttons[0].pressed;
+        ButtonB = gamepad.buttons[1].pressed;
 
         // Visualize Axes and Sticks
         for (const [index, axis] of gamepad.axes.entries()) {
@@ -88,17 +96,31 @@
   function sendController() {
     if (RightBumper === true) {
       if (Back === true) {
-        $.get( "/flyingstate", function( data ) {
-          console.log(data);
-          if (data === 'landed') {
-            $.get( "/takeoff");
-          } else {
-            $.get( "/land");
-          }
-        });
-        sleep(2000);
-      }
-      if (RightJoystickX + RightJoystickY + LeftJoystickX + LeftJoystickY != 0){
+        $.get( "/land");
+        sleep(400);
+      } else if (Start === true) {
+        $.get( "/takeoff");
+        sleep(400);
+      } else if (UpDPad === true) {
+        $.get( "/set_gimbalup");
+        sleep(200);
+      } else if (DownDPad === true) {
+        $.get( "/set_gimbaldown");
+        sleep(200);
+      } else if (LeftDPad === true) {
+        $.get( "/set_zoomout");
+        sleep(200);
+      } else if (RightDPad === true) {
+        $.get( "/set_zoomin");
+        sleep(200);
+      } else if (ButtonA === true) {
+        $.get( "/start_piloting");
+        sleep(200);
+      } else if (ButtonB === true) {
+        $.get( "/stop_piloting");
+        sleep(200);
+      } 
+      else if (RightJoystickX + RightJoystickY + LeftJoystickX + LeftJoystickY != 0){
         console.log(RightJoystickX, RightJoystickY, LeftJoystickX, LeftJoystickY)
         $.get( "/set_pcmd/" + RightJoystickX + "/" + RightJoystickY + "/" + LeftJoystickX + "/" + LeftJoystickY + "/0.1");
       }

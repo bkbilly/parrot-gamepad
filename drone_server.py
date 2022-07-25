@@ -135,79 +135,30 @@ def land():
     return 'ok'
 
 
-@app.route("/get_gimbal")
-def get_gimbal():
-    return str(drone_obj.drone.get_state(gimbal.attitude)[0]['pitch_absolute'])
-
-
-@app.route("/set_gimbalup")
-def set_gimbalup():
-    gimbal_pos = drone_obj.drone.get_state(gimbal.attitude)[0]['pitch_absolute']
-    gimbal_pos += 5
-    set_gimbal(gimbal_pos)
-    return 'ok'
-
-
-@app.route("/set_gimbaldown")
-def set_gimbaldown():
-    gimbal_pos = drone_obj.drone.get_state(gimbal.attitude)[0]['pitch_absolute']
-    gimbal_pos -= 5
-    set_gimbal(gimbal_pos)
-    return 'ok'
-
-
-@app.route("/get_zoom")
-def get_zoom():
-    return str(drone_obj.drone.get_state(zoom_level)[0]['level'])
-
-
-@app.route("/get_maxzoom")
-def get_zoominfo():
-    return str(drone_obj.drone.get_state(zoom_info)[0]['maximum_level'])
-
-
-@app.route("/set_zoom/<zoom_set>")
-def set_zoom(zoom_set):
-    drone_obj.drone(set_zoom_target(0, "level", float(zoom_set))).wait()
-    return 'ok'
-
-
-@app.route("/set_zoomin")
-def set_zoomin():
-    current_zoom = drone_obj.drone.get_state(zoom_level)[0]['level']
-    max_zoom = drone_obj.drone.get_state(zoom_info)[0]['maximum_level']
-    zoom_set = current_zoom + 0.5
-    if zoom_set > max_zoom:
-        zoom_set = max_zoom
-    drone_obj.drone(set_zoom_target(0, "level", float(zoom_set))).wait()
-    return 'ok'
-
-
-@app.route("/set_zoomout")
-def set_zoomout():
-    current_zoom = drone_obj.drone.get_state(zoom_level)[0]['level']
-    zoom_set = current_zoom - 0.5
-    if zoom_set < 1:
-        zoom_set = 1
-    drone_obj.drone(set_zoom_target(0, "level", float(zoom_set))).wait()
-    return 'ok'
-
-
-@app.route("/set_gimbal/<gimbal_set>")
-def set_gimbal(gimbal_set):
+@app.route("/set_gimbal/<gimbal_velocity>")
+def set_gimbalup(gimbal_velocity):
     drone_obj.drone(
         gimbal.set_target(
             gimbal_id=0,
-            control_mode="position",
+            control_mode="velocity",
             yaw_frame_of_reference="none",
             yaw=0.0,
             pitch_frame_of_reference="absolute",
-            pitch=float(gimbal_set),
+            pitch=float(gimbal_velocity),
             roll_frame_of_reference="none",
             roll=0.0,
-        )
-        >> gimbal.attitude(pitch_absolute=float(gimbal_set))
-    ).wait().success()
+        ))
+
+    return 'ok'
+
+
+@app.route("/set_zoom/<zoom_velocity>")
+def set_zoom(zoom_velocity):
+    drone_obj.drone(set_zoom_target(
+        cam_id=0,
+        control_mode="velocity",
+        target=float(zoom_velocity)
+    ))
     return 'ok'
 
 

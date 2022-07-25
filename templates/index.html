@@ -96,31 +96,39 @@
   function sendController() {
     if (RightBumper === true) {
       if (Back === true) {
+        console.log("Land")
         $.get( "/land");
         sleep(400);
       } else if (Start === true) {
+        console.log("TakeOff")
         $.get( "/takeoff");
         sleep(400);
       } else if (UpDPad === true) {
-        $.get( "/set_gimbalup");
-        sleep(200);
+        console.log("Gimbal Up")
+        $.get( "/set_gimbal/0.3");
+        sleep(100);
       } else if (DownDPad === true) {
-        $.get( "/set_gimbaldown");
-        sleep(200);
+        console.log("Gimbal Down")
+        $.get( "/set_gimbal/-0.3");
+        sleep(100);
       } else if (LeftDPad === true) {
-        $.get( "/set_zoomout");
+        console.log("Zoom Out")
+        $.get( "/set_zoom/-0.3");
         sleep(200);
       } else if (RightDPad === true) {
-        $.get( "/set_zoomin");
+        console.log("Zoom In")
+        $.get( "/set_zoom/0.3");
         sleep(200);
       } else if (ButtonA === true) {
+        console.log("Start Pilotingt")
         $.get( "/start_piloting");
         sleep(200);
       } else if (ButtonB === true) {
+        console.log("Stop Pilotingt")
         $.get( "/stop_piloting");
         sleep(200);
       } 
-      else if (RightJoystickX + RightJoystickY + LeftJoystickX + LeftJoystickY != 0){
+      if (RightJoystickX + RightJoystickY + LeftJoystickX + LeftJoystickY != 0){
         console.log(RightJoystickX, RightJoystickY, LeftJoystickX, LeftJoystickY)
         $.get( "/set_pcmd/" + RightJoystickX + "/" + RightJoystickY + "/" + LeftJoystickX + "/" + LeftJoystickY + "/0.1");
       }

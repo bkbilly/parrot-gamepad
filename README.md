@@ -12,7 +12,9 @@ Uses a client/server architecture which means that the controller can be connect
  - **Left Stick:**
    - **Up/Down:** Altitude
    - **Left/Right:** Yaw
- - **Right Stick:** Move left/right/forward/back
+ - **Right Stick:**
+   - **Up/Down:** Pitch
+   - **Left/Right:** Roll
  - **DPad:**
    - **Up/Down:** Gimbal control
    - **Left/Right:** Zoom level

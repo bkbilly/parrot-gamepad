@@ -3,6 +3,7 @@
 You can use an Xbox controller to control the Parrot Anafi drones.
 Uses a client/server architecture which means that the controller can be connected to another computer.
 
+
 ## Controlls
  - **Right Bumper (5):** Keep pressing it to allow the other buttons to be pressed (Dead man's switch)
  - **A (0):** Activate Piloting (Disables Skycontroller and enables gamepad control)
@@ -27,3 +28,6 @@ pip install -r requirements.txt
 python drone_server.py
 python controller.py
 ```
+
+## Video Preview
+[![Video Preview](https://img.youtube.com/vi/FveqGbSb510/0.jpg)](https://www.youtube.com/watch?v=FveqGbSb510)
